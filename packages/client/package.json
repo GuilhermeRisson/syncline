@@ -1,0 +1,38 @@
+{
+  "name": "@syncline/client",
+  "version": "0.0.0",
+  "description": "Offline-first sync client: outbox, push/pull loop, retry with backoff",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@syncline/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo-sqlite": ">=15"
+  },
+  "peerDependenciesMeta": {
+    "expo-sqlite": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "better-sqlite3": "^12.0.0",
+    "@types/better-sqlite3": "^7.6.0"
+  }
+}

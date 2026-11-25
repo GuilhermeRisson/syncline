@@ -1,0 +1,23 @@
+{
+  "name": "@syncline/core",
+  "version": "0.0.0",
+  "description": "Pure TypeScript sync logic: hybrid logical clock, field-level merge, protocol types",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "typecheck": "tsc --noEmit"
+  }
+}

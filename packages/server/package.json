@@ -1,0 +1,39 @@
+{
+  "name": "@syncline/server",
+  "version": "0.0.0",
+  "description": "Express + TypeORM sync endpoints (MySQL)",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@syncline/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "express": ">=4.21",
+    "typeorm": ">=0.3.20"
+  },
+  "devDependencies": {
+    "express": "^5.1.0",
+    "@types/express": "^5.0.0",
+    "typeorm": "^0.3.27",
+    "mysql2": "^3.11.0",
+    "reflect-metadata": "^0.2.2",
+    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.0"
+  }
+}

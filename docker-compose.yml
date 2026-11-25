@@ -1,0 +1,9 @@
+# Optional: a throwaway MySQL for tests if you don't want to use your local install.
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: syncline_test
+    ports:
+      - "3307:3306"

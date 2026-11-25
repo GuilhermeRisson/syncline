@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+*.log
+.env
+*.sqlite
+.DS_Store
+COMECE-AQUI.md
