@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compare, createHlc, tick, type Hlc }  from "./hlc.js";
+import { compare, createHlc, parse, serialize, tick, type Hlc } from "./hlc.js";
 /*
  * GUIA
  * --------------------------------------------------------------------------
@@ -92,9 +92,44 @@ describe("hlc", () => {
   });
 
   describe("serialize / parse", () => {
-    it.todo("parse(serialize(x)) returns x");
-    it.todo("keeps string order equal to compare() order");
-    it.todo("parse() throws on invalid input");
+    it("serialize pads the numbers", () => {
+      expect(serialize(hlc(1732545000000, 3, "A"))).toBe("001732545000000:00003:A");
+    });
+
+    it("parse(serialize(x)) returns x", () => {
+      const original = hlc(1732545000000, 3, "A");
+
+      expect(parse(serialize(original))).toEqual(original);
+    });
+
+    it("works with counter 0", () => {
+      const original = hlc(1000, 0, "A");
+
+      expect(parse(serialize(original))).toEqual(original);
+    });
+
+    it("keeps ':' inside the nodeId", () => {
+      const original = hlc(1000, 1, "device:42");
+
+      expect(parse(serialize(original))).toEqual(original);
+    });
+
+    it("keeps string order equal to compare() order", () => {
+      const older = hlc(9, 0, "A");   // 9 ms
+      const newer = hlc(10, 0, "A");  // 10 ms
+
+      // sem zeros à esquerda, "9" > "10" em ordem de texto
+      expect(compare(older, newer)).toBeLessThan(0);
+      expect(serialize(older) < serialize(newer)).toBe(true);
+    });
+
+    it("parse() throws on invalid input", () => {
+      const invalid = ["lixo", ":0:A", "123::A", "123:0:", "123:0A", "abc:0:A", "-5:0:A"];
+
+      for (const value of invalid) {
+        expect(() => parse(value)).toThrow();
+      }
+    });
   });
 });
 

@@ -17,9 +17,6 @@ import type { HlcString } from "./protocol.js";
  * Para cada uma: escreva o teste em hlc.test.ts primeiro, veja falhar, implemente.
  */
 
-/**
- * Hybrid logical clock state for one node (a device or the server).
- */
 export interface Hlc {
   /** Physical time in ms. */
   wallTime: number;
@@ -81,44 +78,51 @@ export function compare(_a: Hlc, _b: Hlc): number {
   }
 
   return _a.nodeId < _b.nodeId ? -1 : 1;
-  /*
-   * GUIA: comece por esta. É a mais fácil e as outras dependem dela.
-   * Mesmo contrato do Array.sort: negativo se a vem antes, positivo se
-   * vem depois, 0 se são iguais.
-   *
-   * Passo 1: wallTime diferente? Quem tem o maior é o mais recente.
-   * Passo 2: wallTime igual? Desempata pelo counter.
-   * Passo 3: os dois iguais? Desempata pelo nodeId (comparação de string,
-   *          a.nodeId < b.nodeId). Isso garante que dois aparelhos NUNCA
-   *          empatam, então o merge sempre tem um vencedor.
-   */
 }
 
 /** Serialize so that string order matches `compare` (pad the numbers). */
 export function serialize(_clock: Hlc): HlcString {
-  /*
-   * GUIA: transforma o Hlc em texto para salvar no banco (coluna _clocks).
-   * Formato: "<wallTime>:<counter>:<nodeId>"
-   *
-   * O detalhe importante: ordenar as STRINGS tem que dar a mesma ordem que
-   * o compare(). Como "9" > "10" em ordem de texto, você precisa completar
-   * com zeros à esquerda (String.prototype.padStart):
-   *   - wallTime com 15 dígitos (cabe até o ano 33658)
-   *   - counter com 5 dígitos
-   * Exemplo: { wallTime: 1732545000000, counter: 3, nodeId: "A" }
-   *       -> "001732545000000:00003:A"
-   */
-  throw new Error("not implemented");
+  return `${String(_clock.wallTime).padStart(15, "0")}:${String(_clock.counter).padStart(5, "0")}:${_clock.nodeId}`;
 }
 
 export function parse(_value: HlcString): Hlc {
-  /*
-   * GUIA: o caminho de volta do serialize.
-   * Passo 1: separe pelo ":" (cuidado: use só os 2 primeiros ":", porque o
-   *          nodeId pode conter ":" no futuro).
-   * Passo 2: converta wallTime e counter com Number().
-   * Passo 3: se algo vier inválido (NaN, partes faltando), lance um Error
-   *          com mensagem clara. Escreva um teste para isso também.
-   */
-  throw new Error("not implemented");
+
+
+  const wallTimePoint  = _value.indexOf(":");
+
+  if (wallTimePoint === -1) {
+    throw new Error(`Formato HLC inválido: "${_value}"`);
+  }
+
+  const counterPoint = _value.indexOf(":", wallTimePoint + 1);
+  const wallTimeText =  _value.slice(0, wallTimePoint);
+  const wallTime =  Number(_value.slice(0, wallTimePoint));
+  const counterText = _value.slice(wallTimePoint + 1, counterPoint);
+
+
+  if (wallTimeText === "" ) {
+    throw new Error(`WallTime foi encontrado como vazio ou nulo "${wallTimeText}"`);
+  }
+
+  if(counterText === "" || counterPoint === -1){
+    throw new Error(`Counter foi encontrado como vazio ou nulo ${counterText}`);
+  }
+
+  const counter = Number(_value.slice(wallTimePoint + 1, counterPoint));
+
+  const nodeId = _value.slice(counterPoint + 1);
+
+  if(nodeId.length === 0){
+    throw new Error("nodeId vazio");
+  }
+
+  if(wallTime < 0 || counter < 0){
+    throw new Error("WallTime ou Counter retornaram valores a baixo de 0");
+  }
+
+  if(!Number.isInteger(wallTime) || !Number.isInteger(counter)){
+    throw new Error("Algo de errado com os valores recebidos");
+  }
+
+  return {wallTime, counter, nodeId: nodeId};
 }
