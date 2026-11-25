@@ -33,9 +33,20 @@ describe("hlc", () => {
       expect(compare(later, earlier)).toBeGreaterThan(0);
     });
 
-    it.todo("uses the counter when wallTime is equal");
-    it.todo("breaks ties by nodeId when wallTime and counter are equal");
-    it.todo("returns 0 for identical clocks");
+    it("uses the counter when wallTime is equal", () => {
+      const lower = hlc(1000, 1, "A");
+      const higher = hlc(1000, 2, "A");
+
+      expect(compare(lower, higher)).toBeLessThan(0);
+      expect(compare(higher, lower)).toBeGreaterThan(0);
+    });
+
+    it("returns 0 for identical clocks", () => {
+      const lower = hlc(1000, 2, "A");
+      const higher = hlc(1000, 2, "A");
+
+      expect(compare(lower, higher)).toBe(0);
+    });
   });
 
   describe("tick", () => {

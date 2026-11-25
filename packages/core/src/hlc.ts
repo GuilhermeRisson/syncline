@@ -42,24 +42,6 @@ export function tick(_clock: Hlc, _now: number): Hlc {
   const counter = wallTime === _clock.wallTime ? _clock.counter +1 : 0;
   
   return {wallTime, counter, nodeId: _clock.nodeId};
-
-  /*
-   * GUIA: chamada toda vez que ESTE aparelho faz uma escrita.
-   *
-   * Passo 1: o novo wallTime é o MAIOR entre clock.wallTime e now.
-   *          (Se o relógio do celular voltou no tempo, `now` é menor e a
-   *          gente ignora ele. É isso que impede o tempo de "andar para trás".)
-   * Passo 2: o novo counter:
-   *          - se o wallTime NÃO mudou (mesmo ms, ou relógio voltou):
-   *            counter anterior + 1
-   *          - se o wallTime mudou (o tempo andou): volta para 0
-   * Passo 3: devolva um objeto novo com o mesmo nodeId.
-   *
-   * Teste que prova que funcionou: tick com now=1000, depois tick com now=900.
-   * O segundo resultado tem que ser MAIOR que o primeiro no compare().
-   */
-
-  throw new Error("not implemented");
 }
 
 /** Merge a timestamp received from another node (on pull or push response). */
@@ -86,6 +68,19 @@ export function receive(_clock: Hlc, _remote: Hlc, _now: number): Hlc {
 
 /** Total order: negative if a < b, positive if a > b, 0 if equal. */
 export function compare(_a: Hlc, _b: Hlc): number {
+  if (_a.wallTime !== _b.wallTime) {
+    return _a.wallTime < _b.wallTime ? -1 : 1;
+  }
+
+  if (_a.counter !== _b.counter) {
+    return _a.counter < _b.counter ? -1 : 1;
+  }
+
+  if (_a.nodeId === _b.nodeId) {
+    return 0;
+  }
+
+  return _a.nodeId < _b.nodeId ? -1 : 1;
   /*
    * GUIA: comece por esta. É a mais fácil e as outras dependem dela.
    * Mesmo contrato do Array.sort: negativo se a vem antes, positivo se
@@ -97,7 +92,6 @@ export function compare(_a: Hlc, _b: Hlc): number {
    *          a.nodeId < b.nodeId). Isso garante que dois aparelhos NUNCA
    *          empatam, então o merge sempre tem um vencedor.
    */
-  throw new Error("not implemented");
 }
 
 /** Serialize so that string order matches `compare` (pad the numbers). */
