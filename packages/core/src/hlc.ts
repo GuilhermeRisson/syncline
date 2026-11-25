@@ -37,6 +37,12 @@ export function createHlc(nodeId: string, now: number): Hlc {
 
 /** Advance the clock for a local event and return the new timestamp. */
 export function tick(_clock: Hlc, _now: number): Hlc {
+
+  const wallTime = Math.max(_clock.wallTime,_now)
+  const counter = wallTime === _clock.wallTime ? _clock.counter +1 : 0;
+  
+  return {wallTime, counter, nodeId: _clock.nodeId};
+
   /*
    * GUIA: chamada toda vez que ESTE aparelho faz uma escrita.
    *
@@ -52,6 +58,7 @@ export function tick(_clock: Hlc, _now: number): Hlc {
    * Teste que prova que funcionou: tick com now=1000, depois tick com now=900.
    * O segundo resultado tem que ser MAIOR que o primeiro no compare().
    */
+
   throw new Error("not implemented");
 }
 
