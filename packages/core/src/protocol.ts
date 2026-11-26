@@ -1,13 +1,3 @@
-/*
- * GUIA: este arquivo já está pronto. Ele define o "formato das mensagens"
- * entre o celular e o servidor. Leia com calma: todos os outros arquivos
- * usam estes tipos. Não precisa mexer agora.
- */
-
-/**
- * Wire protocol shared by client and server.
- * See docs/adr for the reasoning behind each choice.
- */
 
 /** Serialized hybrid logical clock: "<physical ms>:<counter>:<nodeId>". */
 export type HlcString = string;
